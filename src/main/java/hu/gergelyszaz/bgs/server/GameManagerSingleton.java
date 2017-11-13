@@ -1,8 +1,8 @@
-package hu.gergelyszaz.BGS.server;
+package hu.gergelyszaz.bgs.server;
 
-import hu.gergelyszaz.BGS.manager.GameFactory;
-import hu.gergelyszaz.BGS.manager.GameManager;
-import hu.gergelyszaz.BGS.manager.ModelManager;
+import hu.gergelyszaz.bgs.manager.GameFactory;
+import hu.gergelyszaz.bgs.manager.GameManager;
+import hu.gergelyszaz.bgs.manager.ModelManager;
 
 /**
  * Created by mad on 2016. 09. 25..

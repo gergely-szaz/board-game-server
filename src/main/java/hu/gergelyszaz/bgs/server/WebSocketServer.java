@@ -1,6 +1,6 @@
-package hu.gergelyszaz.BGS.server;
+package hu.gergelyszaz.bgs.server;
 
-import hu.gergelyszaz.BGS.util.FileUtil;
+import hu.gergelyszaz.bgs.util.FileUtil;
 import org.glassfish.tyrus.server.Server;
 
 import java.io.InputStream;

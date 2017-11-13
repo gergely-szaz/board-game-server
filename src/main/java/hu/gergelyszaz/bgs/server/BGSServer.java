@@ -1,15 +1,14 @@
-package hu.gergelyszaz.BGS.server;
+package hu.gergelyszaz.bgs.server;
 
 import com.google.gson.Gson;
-import hu.gergelyszaz.BGS.view.Controller;
-import hu.gergelyszaz.BGS.view.View;
-import hu.gergelyszaz.BGS.manager.GameManager;
-import hu.gergelyszaz.BGS.state.GameState;
+import hu.gergelyszaz.bgs.view.Controller;
+import hu.gergelyszaz.bgs.view.View;
+import hu.gergelyszaz.bgs.manager.GameManager;
+import hu.gergelyszaz.bgs.state.GameState;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.websocket.*;
-import javax.websocket.CloseReason.CloseCodes;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.util.logging.Logger;
