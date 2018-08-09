@@ -48,15 +48,6 @@ public class WebSocketServer {
 			BGSServer.gm = new GameManager(new GameFactory(), new ModelManager());
 			server = new Server(hostName, port, rootpath, null, BGSServer.class);
 
-			InputStream input = WebSocketServer.class.getResourceAsStream(gamesPath);
-			configFile.load(input);
-			for (Object k : configFile.values()) {
-				System.out.println((String) k);
-				String gameString = FileUtil.readFile((String) k);
-
-				BGSServer.gm.modelManager.LoadModel(gameString);
-			}
-
 			new Thread(BGSServer.gm).start();
 			server.start();
 		} catch (Exception e) {

@@ -1,25 +1,25 @@
 package hu.gergelyszaz.bgs.server;
 
 import static org.junit.Assert.fail;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
-import java.util.logging.Logger;
+
 import javax.websocket.ClientEndpoint;
 import javax.websocket.CloseReason;
 import javax.websocket.CloseReason.CloseCodes;
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
 import javax.websocket.Session;
+
 import org.glassfish.tyrus.client.ClientManager;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class WebSocketServerFunctionalTest {
@@ -29,6 +29,7 @@ public class WebSocketServerFunctionalTest {
 	@Before
 	public void setUp() throws Exception {
 		WebSocketServer.runServer(null, 8025, null, "/config/games.properties");
+		BGSServer.gm.modelManager.LoadModel(WebSocketServerFunctionalTest.class.getClassLoader().getResourceAsStream("mills.bgl"));
 	}
 
 	@After
