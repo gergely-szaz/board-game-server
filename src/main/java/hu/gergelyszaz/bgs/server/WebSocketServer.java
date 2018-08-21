@@ -1,17 +1,18 @@
 package hu.gergelyszaz.bgs.server;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.glassfish.tyrus.server.Server;
+
 import hu.gergelyszaz.bgs.manager.GameFactory;
 import hu.gergelyszaz.bgs.manager.GameManager;
 import hu.gergelyszaz.bgs.manager.ModelManager;
-import hu.gergelyszaz.bgs.util.FileUtil;
-import java.io.InputStream;
-import java.util.Properties;
-import java.util.logging.*;
-import org.glassfish.tyrus.server.Server;
 
+/**
+ * @author Gergely Száz
+ */
 public class WebSocketServer {
-
-	private static Properties configFile = new Properties();
 	private static Logger logger = Logger.getLogger(WebSocketServer.class.getName());
 	private static volatile boolean running = false;
 	private static Server server = null;
@@ -27,22 +28,18 @@ public class WebSocketServer {
 	public static void main(String[] args) throws Exception {
 		logger.log(Level.INFO, "Starting server");
 
-		int port = 8025;
-		String portString = System.getenv("PORT");
-		if (portString != null) {
-			port = Integer.parseInt(portString);
-		}
-		String hostName = "0.0.0.0";
-		if (System.getenv("HOSTNAME") != null) {
-			hostName = System.getenv("HOSTNAME");
-		}
-		WebSocketServer.runServer(hostName, port, null, "/config/games.properties");
+		int port = Configuration.getPort();
+		String hostName = Configuration.getHostname();
+
+		WebSocketServer.runServer(hostName, port, null);
+
 		while (WebSocketServer.isRunning()) {
-			Thread.sleep(1000);
+			BGSServer.pingClients();
+			Thread.sleep(Configuration.getPingIntervalInSeconds() * 1000);
 		}
 	}
 
-	public static boolean runServer(String hostName, int port, String rootpath, String gamesPath) {
+	public static boolean runServer(String hostName, int port, String rootpath) {
 		running = true;
 		try {
 			BGSServer.gm = new GameManager(new GameFactory(), new ModelManager());
