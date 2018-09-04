@@ -28,8 +28,8 @@ public class WebSocketServerFunctionalTest {
 
 	@Before
 	public void setUp() throws Exception {
-		WebSocketServer.runServer(null, 8025, null);
-		BGSServer.gm.modelManager.LoadModel(WebSocketServerFunctionalTest.class.getClassLoader().getResourceAsStream("mills.bgl"));
+		WebSocketServer.startServer(null, 8025, null);
+		BGSServer.GAME_MANAGER.modelManager.LoadModel(WebSocketServerFunctionalTest.class.getClassLoader().getResourceAsStream("mills.bgl"));
 	}
 
 	@After

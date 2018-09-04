@@ -16,22 +16,16 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.google.gson.Gson;
-
 import hu.gergelyszaz.bgs.manager.GameManager;
-import hu.gergelyszaz.bgs.view.Controller;
-import hu.gergelyszaz.bgs.view.View;
 
 @ServerEndpoint(value = "/game")
 public class BGSServer {
-
-	private static final String GAMESTATEVERSION = "gameStateVersion";
-	private static final String GAME = "game";
+	private static final String VIEW = "game";
 	private static final String PARAMETER = "parameter";
 	private static final String ACTION = "action";
 	private static final String STATUS = "status";
 
-	public static GameManager gm;
+	public static GameManager GAME_MANAGER;
 	private static Logger log = Logger.getLogger(BGSServer.class.getName());
 
 	private static Set<Session> sessions = new HashSet<>();
@@ -46,8 +40,6 @@ public class BGSServer {
 	public void onClose(Session session, CloseReason closeReason) {
 		sessions.remove(session);
 
-		// TODO use controller for disconnecting client from game
-		Controller controller = (Controller) session.getUserProperties().get(GAME);
 		log.info(String.format("Session %s closed because of %s", session.getId(), closeReason));
 	}
 
@@ -83,27 +75,27 @@ public class BGSServer {
 	}
 
 	private String handleSelectAction(Session session, String param) {
-		JSONObject ret = new JSONObject();
+
+		ViewImpl view = (ViewImpl) session.getUserProperties().get(VIEW);
 		int selected = Integer.parseInt(PARAMETER);
-		Controller c = (Controller) session.getUserProperties().get(GAME);
-		if (c.setSelected(session.getId(), selected)) {
-			ret.put(STATUS, "ok");
-			gm.Wake();
+
+		if (view.select(selected)) {
+			GAME_MANAGER.Wake();
+			return new JSONObject().put(STATUS, "ok").toString();
 		} else {
 			return createErrorMessage("Internal Server Error");
 		}
-		return ret.toString();
 	}
 
 	private String handleInfoAction() {
-		JSONObject ret = new JSONObject();
-		ret.put(STATUS, "ok");
+
 		JSONArray games = new JSONArray();
-		for (String g : gm.modelManager.AvailableModels()) {
+		
+		for (String g : GAME_MANAGER.modelManager.AvailableModels()) {
 			games.put(new JSONObject().put("name", g));
 		}
-		ret.put("games", games);
-		return ret.toString();
+
+		return new JSONObject().put(STATUS, "ok").put("games", games).toString();
 	}
 
 	private String handleJoinAction(Session session, String param) throws Exception {
@@ -112,15 +104,13 @@ public class BGSServer {
 		}
 
 		JSONObject ret = new JSONObject();
-		Controller c = gm.JoinGame(session.getId(), param);
-		c.AddView(new View() {
-			@Override
-			public void Refresh() {
-				session.getAsyncRemote().sendText(new Gson().toJson(c.getCurrentState(session.getId())));
-			}
-		});
-		session.getUserProperties().put(GAME, c);
-		session.getUserProperties().put(GAMESTATEVERSION, -1);
+
+		ViewImpl view = new ViewImpl(session);
+
+		GAME_MANAGER.JoinGame(view, param);
+
+		session.getUserProperties().put(VIEW, view);
+
 		return ret.put(STATUS, "ok").put("message", "Joined").toString();
 	}
 
@@ -129,7 +119,7 @@ public class BGSServer {
 	}
 
 	private boolean isAlreadyJoined(Session session) {
-		return session.getUserProperties().containsKey(GAME);
+		return session.getUserProperties().containsKey(VIEW);
 	}
 
 	public static void pingClients() {
